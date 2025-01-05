@@ -1,6 +1,7 @@
 package com.example.todolist.users;
 
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,10 @@ public class UserController {
       if(user != null){
             return ResponseEntity.badRequest().body("User already exists");
         }
+
+        var hashedPassword = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
+
+        userModel.setPassword(hashedPassword);
 
         var userCreated = this.userRepository.save(userModel);
         return ResponseEntity.ok(userCreated);
